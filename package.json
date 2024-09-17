@@ -1,5 +1,5 @@
 {
-  "name": "uralyt-u-control-schedule",
+  "name": "uralyt-u-control",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
@@ -9,7 +9,15 @@
     "web": "expo start --web",
     "drizzle:generate": "npx drizzle-kit generate",
     "drizzle:migrate": "npx drizzle-kit migrate",
-    "drizzle:studio": "npx drizzle-kit studio"
+    "drizzle:studio": "npx drizzle-kit studio",
+    "build:dev": "eas build --profile development",
+    "build:preview": "eas build --profile preview",
+    "build:prod": "eas build --profile production -p all",
+    "build:prod:android": "eas build --profile production -p android",
+    "build:prod:ios": "eas build --profile production -p ios",
+    "build:local:ios": "eas build --platform ios --local",
+    "build:local:android": "eas build --platform android --local",
+    "prebuild": "expo prebuild"
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",

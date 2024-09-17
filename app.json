@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Uralyt U Control Schedule",
-    "slug": "uralyt-u-control-schedule",
-    "scheme": "uralyt-u-control-schedule",
+    "name": "Uralyt-U Control App",
+    "slug": "uralyt-u-control-app",
+    "scheme": "uralyt-u-control-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,6 +24,14 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "acdd5d39-6b6f-4831-8322-58c81c538dd9"
+      }
+    },
+    "owner": "peal26"
   }
 }
