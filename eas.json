@@ -53,11 +53,11 @@
           "track": "production"
         },
         "ios": {
-          "appleId": "",
-          "ascAppId": "",
-          "appleTeamId": "",
+          "appleId": "123",
+          "ascAppId": "123",
+          "appleTeamId": "1234",
           "language": "pt-BR",
-          "companyName": ""
+          "companyName": "peal26"
         }
       }
     }
