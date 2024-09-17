@@ -10,7 +10,7 @@
     "drizzle:generate": "npx drizzle-kit generate",
     "drizzle:migrate": "npx drizzle-kit migrate",
     "drizzle:studio": "npx drizzle-kit studio",
-    "release": "semantic-release",
+    "release": "cross-env GH_TOKEN=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 npx semantic-release",
     "build:dev": "eas build --profile development",
     "build:preview": "eas build --profile preview",
     "build:prod": "eas build --profile production -p all",
@@ -51,8 +51,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/better-sqlite3": "^7.6.11",
     "@types/react": "~18.2.79",
+    "cross-env": "^7.0.3",
     "drizzle-kit": "^0.24.2",
     "semantic-release": "^24.1.1",
     "typescript": "~5.3.3"
