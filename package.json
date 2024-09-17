@@ -10,6 +10,7 @@
     "drizzle:generate": "npx drizzle-kit generate",
     "drizzle:migrate": "npx drizzle-kit migrate",
     "drizzle:studio": "npx drizzle-kit studio",
+    "release": "semantic-release",
     "build:dev": "eas build --profile development",
     "build:preview": "eas build --profile preview",
     "build:prod": "eas build --profile production -p all",
@@ -53,6 +54,7 @@
     "@types/better-sqlite3": "^7.6.11",
     "@types/react": "~18.2.79",
     "drizzle-kit": "^0.24.2",
+    "semantic-release": "^24.1.1",
     "typescript": "~5.3.3"
   },
   "private": true

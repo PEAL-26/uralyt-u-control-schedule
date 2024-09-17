@@ -61,6 +61,46 @@ Para configurar o projeto, você pode precisar definir algumas variáveis de amb
 
 - **/config:** Configurações da aplicação, como variáveis de ambiente.
 
+### Versionamento Automático
+
+O versionamento do projeto é realizado de forma automática usando o **`semantic-release`**, que gera as versões com base nas mensagens dos commits, seguindo a convenção **[Conventional Commits](https://www.conventionalcommits.org/)**.
+
+#### Convenção de Commits
+
+- `feat: <descrição>` - Para adicionar uma nova funcionalidade (isto gera um incremento *minor* no versionamento).
+- `fix: <descrição>` - Para corrigir um bug (isto gera um incremento *patch* no versionamento).
+- `BREAKING CHANGE: <descrição>` - Para mudanças que quebram a compatibilidade da API (isto gera um incremento *major* no versionamento).
+
+#### Exemplos de Commits
+
+- **Adição de uma nova funcionalidade:**
+  
+  ```bash
+  git commit -m "feat: adiciona funcionalidade de registro de usuários"
+  ```
+
+- **Correção de bug:**
+
+  ```bash
+  git commit -m "fix: corrige erro no login de usuários"
+  ```
+
+- **Mudança que quebra compatibilidade:**
+
+  ```bash
+  git commit -m "feat: refatora autenticação de usuários"
+  # Corpo do commit:
+  BREAKING CHANGE: refatoração da autenticação remove suporte ao método anterior de login
+  ```
+
+#### Como Funciona
+
+1. Cada commit é analisado pelo `semantic-release` para determinar o tipo de incremento necessário no versionamento (`patch`, `minor` ou `major`).
+2. Com base nos commits, a nova versão é gerada automaticamente.
+3. O `semantic-release` cria uma *tag* correspondente no Git com a versão incrementada.
+4. Essa tag é então publicada no repositório remoto (GitHub, GitLab, etc.), junto com as notas de release.
+
+
 ## Contribuição
 
 Se você deseja contribuir para o projeto, siga estas etapas:
