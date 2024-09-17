@@ -1,47 +1,23 @@
-// import * as path from "node:path";
 import { Platform } from "react-native";
 import { useEffect, useState } from "react";
-// import { migrate } from "drizzle-orm/mysql2/migrator";
 import { useMigrations as useMigrationsSqlite } from "drizzle-orm/expo-sqlite/migrator";
+import { db } from "@/database/connection";
 
 import migrations from "../../drizzle/migrations";
 
-interface Props {
-  database: any;
-  connection: any;
-}
-
-export function useMigrations(props: Props) {
-  const { database, connection } = props;
+export function useMigrations() {
   const [successGlobal, setSuccessGlobal] = useState(false);
-  const [errorGlobal, setErrorGlobal] = useState<Error | null>(null);
+  const [errorGlobal, setErrorGlobal] = useState<Error | undefined>(undefined);
 
-  const { success, error } =
-    Platform.OS !== "web"
-      ? useMigrationsSqlite(database, migrations)
-      : { success: false, error: null };
-
-  const mysqlMigrate = async () => {
-    if (!database) return;
-
-    try {
-      setSuccessGlobal(false);
-      // await migrate(database, {
-      //   migrationsFolder: path.join(__dirname, "..", "..", "drizzle"),
-      // });
-      setSuccessGlobal(true);
-    } catch (error: any) {
-      setErrorGlobal(new Error(error));
-    } finally {
-      await connection.end();
-    }
-  };
+  if (db && Platform.OS !== "web") {
+    
+    // const { success, error } = useMigrationsSqlite(db, migrations);
+    // return { success, error };
+  }
 
   useEffect(() => {
-    if (Platform.OS === "web") {
-      mysqlMigrate();
-    }
+    setSuccessGlobal(true);
   }, []);
 
-  return { success: success || successGlobal, error: error || errorGlobal };
+  return { success: successGlobal, error: errorGlobal };
 }

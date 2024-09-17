@@ -5,6 +5,8 @@ import {
   View,
   RefreshControl,
   useWindowDimensions,
+  Alert,
+  AlertButton,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -15,6 +17,8 @@ import { AddEditModal } from "@/components/modals/add-edit-modal";
 import { styles } from "./styles";
 import { useHome } from "./use-home";
 import { renderItem } from "./render-item";
+import { resetDatabase } from "@/database/migrate";
+import { exportData, importFromTxt } from "@/database/backup";
 
 export function Home() {
   const {
@@ -29,9 +33,13 @@ export function Home() {
     refresh,
     responseData,
     handleRefresh,
+    handleNextPage,
     handleLoadingStart,
     handleLoadingMore,
     onSwipeableWillOpen,
+    handleResetDatabase,
+    handleExportData,
+    handleImportData,
   } = useHome();
   const window = useWindowDimensions();
   const heightWindow = window.height - 200;
@@ -39,7 +47,45 @@ export function Home() {
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.title}>Uralyt-U Control Schedule</Text>
+        <View style={{ position: "relative" }}>
+          <Text style={styles.title}>UUCS</Text>
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 40,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <Button
+              onPress={() =>
+                exportData().then(() => alert("Backup feito com sucesso."))
+              }
+            >
+              <MaterialIcons
+                name="vertical-align-top"
+                size={24}
+                color={colors.text}
+              />
+            </Button>
+            <Button
+              onPress={() =>
+                importFromTxt().then(() => alert("Restauro feito com sucesso"))
+              }
+            >
+              <MaterialIcons
+                name="vertical-align-bottom"
+                size={24}
+                color={colors.text}
+              />
+            </Button>
+            <Button onPress={handleResetDatabase}>
+              <MaterialIcons name="restart-alt" size={24} color={colors.text} />
+            </Button>
+          </View>
+        </View>
         <FlatList
           data={loadingStart ? [] : data}
           refreshControl={
@@ -50,8 +96,6 @@ export function Home() {
           renderItem={(render) =>
             renderItem({
               ...render,
-              loading: loadingStart,
-              heightWindow,
               onSwipeableWillOpen,
               onEdit: handleEditData,
             })
@@ -66,6 +110,7 @@ export function Home() {
                 !refresh &&
                 !loadingStart && (
                   <Button
+                    onPress={handleNextPage}
                     style={{
                       backgroundColor: colors.primary,
                       borderRadius: 20,
@@ -81,11 +126,7 @@ export function Home() {
                   />
                 )}
               {loadingMore && (
-                <ActivityIndicator
-                  color={colors.primary}
-                  size={24}
-                  animating={loadingMore}
-                />
+                <ActivityIndicator color={colors.primary} size={24} animating />
               )}
             </View>
           )}
@@ -98,9 +139,19 @@ export function Home() {
                 height: heightWindow,
               }}
             >
-              <Text style={{ color: colors.text, textAlign: "center" }}>
-                Vazio
-              </Text>
+              <ActivityIndicator
+                color={colors.primary}
+                animating={loadingStart}
+                size={24}
+              />
+              {!loadingStart &&
+                !loadingMore &&
+                !refresh &&
+                data.length === 0 && (
+                  <Text style={{ color: colors.text, textAlign: "center" }}>
+                    Vazio
+                  </Text>
+                )}
             </View>
           )}
         />

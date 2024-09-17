@@ -27,6 +27,7 @@ export function DatetimePicker(props: Props) {
       date={open ? value : undefined}
       onConfirm={handleConfirm}
       onCancel={handleCancel}
+      maximumDate={new Date()}
     />
   );
 }

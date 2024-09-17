@@ -1,34 +1,51 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { SQLiteProvider } from "expo-sqlite";
-
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { colors } from "@/styles/color";
 import { useMigrations } from "@/hooks/use-migration";
-import {
-  useDatabaseConnection,
-  DATABASE_NAME,
-} from "@/hooks/use-database-connection";
+import { DATABASE_NAME } from "@/database/connection";
+import { migrateDbIfNeeded } from "@/database/migrate";
 
 export function DrizzleProvider({ children }: { children: ReactNode }) {
-  const { database, connection, loading } = useDatabaseConnection();
-  const { error, success } = useMigrations({ database, connection });
+  // const { error, success } = useMigrations();
 
-  // if (error && !loading && !success) {
+  // if (error) {
+  //   console.error(error);
   //   return (
   //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <Text style={{ color: colors.text }}>{error.message}</Text>
+  //       <Text style={{ color: colors.text }}>
+  //         Oops! Falha ao carregar aplicação.
+  //       </Text>
   //     </View>
   //   );
   // }
 
-  // if (loading && !success) {
-  //   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //     <ActivityIndicator animating color={colors.primary} />
-  //   </View>;
+  // if (!success) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+  //       <ActivityIndicator animating color={colors.primary} size={32} />
+  //     </View>
+  //   );
   // }
 
   return (
-    <SQLiteProvider databaseName={DATABASE_NAME}>{children}</SQLiteProvider>
+    <Suspense
+      fallback={
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator animating color={colors.primary} size={32} />
+        </View>
+      }
+    >
+      <SQLiteProvider
+        databaseName={DATABASE_NAME}
+        onInit={migrateDbIfNeeded}
+        useSuspense
+      >
+        {children}
+      </SQLiteProvider>
+    </Suspense>
   );
 }

@@ -1,4 +1,12 @@
-import { Modal, TouchableOpacity, Text, View, TextInput } from "react-native";
+import {
+  Modal,
+  TouchableOpacity,
+  Text,
+  View,
+  TextInput,
+  ActivityIndicatorBase,
+  ActivityIndicator,
+} from "react-native";
 
 import { MaterialIcons } from "@expo/vector-icons";
 import { getColorForPH } from "@/helpers/ph";
@@ -18,6 +26,7 @@ export interface Props {
 
 export function AddEditModal(props: Props) {
   const { id, open } = props;
+
   const {
     mode,
     data,
@@ -28,6 +37,10 @@ export function AddEditModal(props: Props) {
     openDatetimePicker,
     setOpenDatetimePicker,
     handleOpenDatetimePicker,
+    isLoading,
+    error,
+    saving,
+    loadData,
   } = useAddEditModal(props);
 
   return (
@@ -88,11 +101,11 @@ export function AddEditModal(props: Props) {
                 returnKeyType="done"
                 style={styles.input}
                 cursorColor={colors.primary}
-                value={`${data?.spoons || "1"}`}
+                value={data?.spoons ? String(data.spoons) : undefined}
                 onChangeText={(text) =>
                   setData(({ ...prev }) => ({
                     ...prev,
-                    spoons: parseInt(text || "0"),
+                    spoons: parseInt(text ?? "0"),
                   }))
                 }
               />
@@ -136,12 +149,53 @@ export function AddEditModal(props: Props) {
               </View>
             </View>
             <Button
+              disabled={saving}
               style={styles.buttonSave}
               textStyle={styles.buttonSaveText}
               text="Guardar"
               onPress={handleSave}
             />
+
+            {error && (
+              <Text style={{ color: colors.danger, textAlign: "center" }}>
+                {error}
+              </Text>
+            )}
           </View>
+          {isLoading && id && (
+            <View
+              style={[
+                styles.loading,
+                /*error*/ true ? { backgroundColor: colors.background } : {},
+              ]}
+            >
+              <ActivityIndicator
+                animating={isLoading}
+                size={24}
+                color={colors.primary}
+              />
+              <Text style={styles.headerTitle}>{error}</Text>
+              <Button
+                text="Recarregar"
+                textStyle={{ color: colors.text }}
+                style={[styles.buttonSave]}
+                onPress={loadData}
+              />
+              <Button
+                text="Fechar"
+                textStyle={{ color: colors.text }}
+                onPress={handleClose}
+                style={[
+                  styles.buttonSave,
+                  {
+                    backgroundColor: "transparent",
+                    borderColor: colors.primary,
+                    borderWidth: 1,
+                  },
+                ]}
+              />
+            </View>
+          )}
         </View>
       </View>
       <DatetimePicker

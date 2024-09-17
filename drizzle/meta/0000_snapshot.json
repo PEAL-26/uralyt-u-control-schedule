@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d51d0d46-c338-4ee3-a5e8-23aa3da6f00a",
+  "id": "ebe9a542-c3cf-4e8d-8114-3abd24bd1dc6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "schedules": {
@@ -10,13 +10,20 @@
         "id": {
           "name": "id",
           "type": "integer",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
         "date": {
           "name": "date",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "spoons": {
+          "name": "spoons",
+          "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -26,13 +33,6 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "text": {
-          "name": "text",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         }
       },

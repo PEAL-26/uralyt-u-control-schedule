@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { SwipeableWillOpen } from "./render-item";
 import { useDatabase } from "@/hooks/use-database";
-import * as scheduleSchema from "@/database/schemas/schedule-schema";
+import * as schema from "@/database/schemas";
+import { Alert } from "react-native";
+import { resetDatabase } from "@/database/migrate";
+import { asc, desc } from "drizzle-orm";
+import { useSelectFolder } from "@/hooks/use-select-folder";
 
 type Data = { id: number; date: Date; spoons: number; pH: number };
 type ResponseData = {
-  data: Data;
+  data: Data[];
   totalItems: number;
   currentPage: number;
   totalPages: number;
@@ -14,6 +18,10 @@ type ResponseData = {
 };
 
 export function useHome() {
+  const orderByDate = desc(schema.schedule.date);
+  const database = useDatabase(schema.schedule);
+  const { selectFolder } = useSelectFolder();
+
   const [openAddModal, setOpenAddModal] = useState(false);
   const [dataId, setDataId] = useState<string | null>(null);
   const [refresh, setRefresh] = useState(false);
@@ -23,25 +31,56 @@ export function useHome() {
   const [responseData, setResponseData] = useState<ResponseData | null>(null);
   const [data, setData] = useState<Data[]>([]);
   const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  const database = useDatabase(scheduleSchema);
+  const openSwipeableRef = useRef<any | null>(null);
 
   const handleOpenAddModal = () => setOpenAddModal(true);
 
   const handleCloseAddModal = (updateList: boolean) => {
     setOpenAddModal(false);
     setDataId(null);
-    handleLoadingStart();
+
+    if (updateList) handleLoadingStart();
   };
 
   const handleEditData = (id: string) => {
     setDataId(id);
     handleOpenAddModal();
+
+    if (openSwipeableRef?.current) {
+      openSwipeableRef.current.close();
+    }
   };
 
-  const handleDeleteData = (id: string) => {};
+  const handleDeleteData = (id: string) => {
+    Alert.alert(
+      "Deseja eliminar esse item?",
+      "Não poderá recuperar os dados eliminados, continuar mesmo assim?",
+      [
+        { text: "Cancelar" },
+        {
+          text: "Ok",
+          onPress: async () => {
+            try {
+              await database.delete(id);
+              await handleLoadingStart();
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        },
+      ],
+      {
+        cancelable: true,
+        userInterfaceStyle: "dark",
+      }
+    );
 
-  const openSwipeableRef = useRef<any | null>(null);
+    if (openSwipeableRef?.current) {
+      openSwipeableRef.current.close();
+    }
+  };
 
   const onSwipeableWillOpen = ({
     id,
@@ -60,47 +99,109 @@ export function useHome() {
   };
 
   const handleLoadingStart = async () => {
-    if (loadingStart) return;
+    if (loadingMore || loadingStart || refresh) return;
 
     try {
+      setData(() => []);
       setLoadingStart(true);
-      const response = await database.list<Data>(page);
+      const response = await database.list<Data>(page, pageSize, orderByDate);
       setData(response?.data || []);
+      setResponseData(response);
     } catch (error) {
+      console.log(error);
     } finally {
       setLoadingStart(false);
     }
   };
 
   const handleLoadingMore = async () => {
-    if (loadingMore) return;
+    if (loadingMore || loadingStart || refresh) return;
 
     try {
       setLoadingMore(true);
-      const response = await database.list(page);
-      // setData((prev) => [...prev, ...(response as any)]);
+      const response = await database.list<Data>(page, pageSize, orderByDate);
+      const newData = response.data.filter(
+        (item) => !data.find((f) => f.id === item.id)
+      );
+      setData((prev) => [...prev, ...newData]);
+      setResponseData(response);
     } catch (error) {
     } finally {
       setLoadingMore(false);
     }
   };
 
+  const handleNextPage = async () => {
+    if (responseData?.hasNextPage) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
   const handleRefresh = async () => {
-    if (refresh) return;
+    if (loadingMore || loadingStart || refresh) return;
 
     try {
       setRefresh(true);
-      const response = await database.list(page);
-      // setData((prev) => [...prev, ...(response as any)]);
+      setData(() => []);
+      const newData: Data[] = [];
+      let lastResponse: ResponseData | null = null;
+
+      for (let index = 1; index <= page; index++) {
+        const response = await database.list<Data>(
+          index,
+          pageSize,
+          orderByDate
+        );
+        newData.push(...response.data);
+        lastResponse = response;
+      }
+
+      setData(newData);
+      setResponseData(lastResponse);
     } catch (error) {
     } finally {
       setRefresh(false);
     }
   };
 
+  const handleResetDatabase = () => {
+    Alert.alert(
+      "Reiniciar a base de dados?",
+      "Todos os dados serão apagados, continuar mesmo assim?",
+      [
+        { text: "Cancelar" },
+        {
+          text: "Ok",
+          onPress: async () => {
+            try {
+              await resetDatabase();
+              await handleLoadingStart();
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        },
+      ],
+      {
+        cancelable: true,
+        userInterfaceStyle: "dark",
+      }
+    );
+  };
+
+  const handleExportData = async () => {
+    await selectFolder();
+  };
+
+  const handleImportData = async () => {};
+
   useEffect(() => {
     handleLoadingStart();
   }, []);
+
+  useEffect(() => {
+    handleLoadingMore();
+  }, [page]);
 
   return {
     data,
@@ -117,6 +218,10 @@ export function useHome() {
     handleRefresh,
     handleLoadingStart,
     handleLoadingMore,
+    handleNextPage,
     onSwipeableWillOpen,
+    handleResetDatabase,
+    handleExportData,
+    handleImportData,
   };
 }

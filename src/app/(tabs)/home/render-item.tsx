@@ -21,28 +21,11 @@ type Props = ListRenderItemInfo<{
 }> & {
   onSwipeableWillOpen?(props: SwipeableWillOpen): void;
   onEdit?(id: string): void;
-  loading: boolean;
-  heightWindow?: number;
 };
 
 export function renderItem(props: Props) {
-  const { loading, heightWindow, onSwipeableWillOpen, item, onEdit } = props;
+  const { onSwipeableWillOpen, item, onEdit } = props;
   let currentRef: any = null;
-
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          height: heightWindow,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ActivityIndicator color={colors.primary} animating size={24} />
-      </View>
-    );
-  }
 
   return (
     <Swipeable
