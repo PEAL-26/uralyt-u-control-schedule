@@ -23,10 +23,26 @@ export default function TabsLayout() {
       // )}
     >
       <Tabs.Screen
-        key={"home"}
-        name={"home"}
+        key="home"
+        name="home"
         options={{
-          title: 'Home',
+          title: "Home",
+          tabBarHideOnKeyboard: true,
+        }}
+      />
+      <Tabs.Screen
+        key="charts"
+        name="charts"
+        options={{
+          title: "Gráficos",
+          tabBarHideOnKeyboard: true,
+        }}
+      />
+      <Tabs.Screen
+        key="settings"
+        name="settings"
+        options={{
+          title: "Configurações",
           tabBarHideOnKeyboard: true,
         }}
       />

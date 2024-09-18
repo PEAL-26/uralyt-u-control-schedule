@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TextInput,
-  ActivityIndicatorBase,
   ActivityIndicator,
 } from "react-native";
 
@@ -28,19 +27,19 @@ export function AddEditModal(props: Props) {
   const { id, open } = props;
 
   const {
-    mode,
-    data,
     phs,
-    handleClose,
-    handleSave,
+    data,
+    mode,
     setData,
-    openDatetimePicker,
-    setOpenDatetimePicker,
-    handleOpenDatetimePicker,
-    isLoading,
+    handleSave,
+    handleClose,
     error,
     saving,
+    isLoading,
+    openDatetimePicker,
     loadData,
+    setOpenDatetimePicker,
+    handleOpenDatetimePicker,
   } = useAddEditModal(props);
 
   return (
@@ -200,8 +199,19 @@ export function AddEditModal(props: Props) {
       </View>
       <DatetimePicker
         open={openDatetimePicker}
-        onChange={(date) => {
-          date && setData(({ ...prev }) => ({ ...prev, date }));
+        onChange={(newDate) => {
+          if (newDate) {
+            let oldDate = data.date;
+            if (mode === "date") {
+              oldDate.setDate(newDate.getDate());
+              oldDate.setMonth(newDate.getMonth());
+              oldDate.setFullYear(newDate.getFullYear());
+            }
+            if (mode === "time") {
+              oldDate.setHours(newDate.getHours(), newDate.getMinutes(), 0, 0);
+            }
+            setData(({ ...prev }) => ({ ...prev, date: oldDate }));
+          }
         }}
         mode={mode}
         // value={data.date}
