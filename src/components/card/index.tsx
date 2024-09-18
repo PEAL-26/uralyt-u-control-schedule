@@ -14,10 +14,11 @@ type Data = {
 
 interface Props {
   data: Data;
+  onPress?(): void;
 }
 
 export function Card(props: Props) {
-  const { data } = props;
+  const { data, onPress } = props;
   const status = getColorAlertPh(data.pH);
 
   const period = () => {
@@ -28,7 +29,7 @@ export function Card(props: Props) {
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.7}>
+    <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <View style={styles.container}>
         <View style={styles.left}>
           <View

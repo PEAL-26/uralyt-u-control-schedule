@@ -1,21 +1,13 @@
-import {
-  Modal,
-  TouchableOpacity,
-  Text,
-  View,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
+import { Modal, Text, View, TextInput, ActivityIndicator } from "react-native";
 
-import { MaterialIcons } from "@expo/vector-icons";
-import { getColorForPH } from "@/helpers/ph";
-
-import { Button } from "../button";
-import { styles } from "./styles";
-import { useAddEditModal } from "./use-add-edit-modal";
 import { dayjs } from "@/libs/datyjs";
 import { colors } from "@/styles/color";
-import { DatetimePicker } from "../datetime-picker";
+import { getColorForPH } from "@/helpers/ph";
+import { MaterialIcons } from "@expo/vector-icons";
+
+import { styles } from "./styles";
+import { Button } from "../button";
+import { useAddEditModal } from "./use-add-edit-modal";
 
 export interface Props {
   id: string | null;
@@ -23,24 +15,11 @@ export interface Props {
   onClose?(updateList: boolean): void;
 }
 
-export function AddEditModal(props: Props) {
+export function DetailsModal(props: Props) {
   const { id, open } = props;
 
-  const {
-    phs,
-    data,
-    mode,
-    setData,
-    handleSave,
-    handleClose,
-    error,
-    saving,
-    isLoading,
-    openDatetimePicker,
-    loadData,
-    setOpenDatetimePicker,
-    handleOpenDatetimePicker,
-  } = useAddEditModal(props);
+  const { phs, data, handleClose, error, isLoading, loadData } =
+    useAddEditModal(props);
 
   return (
     <Modal
@@ -54,9 +33,7 @@ export function AddEditModal(props: Props) {
       <View style={styles.main}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>
-              {id ? "Editar" : "Adicionar"}
-            </Text>
+            <Text style={styles.headerTitle}>Detalhes</Text>
             <Button onPress={handleClose}>
               <MaterialIcons name="close" color="#fff" size={32} />
             </Button>
@@ -65,48 +42,33 @@ export function AddEditModal(props: Props) {
             <View style={styles.datetime}>
               <View style={[styles.inputContainer, { width: "100%", flex: 1 }]}>
                 <Text style={styles.inputLabel}>Data</Text>
-                <TouchableOpacity
-                  onPress={() => handleOpenDatetimePicker("date")}
-                  activeOpacity={0.8}
-                >
-                  <TextInput
-                    readOnly
-                    style={styles.input}
-                    value={dayjs(data.date).format("DD/MM/YYYY")}
-                    cursorColor={colors.primary}
-                  />
-                </TouchableOpacity>
+                <TextInput
+                  readOnly
+                  style={styles.input}
+                  value={dayjs(data.date).format("DD/MM/YYYY")}
+                  cursorColor={colors.primary}
+                />
               </View>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Hora</Text>
-                <TouchableOpacity
-                  onPress={() => handleOpenDatetimePicker("time")}
-                  activeOpacity={0.8}
-                >
-                  <TextInput
-                    readOnly
-                    style={styles.input}
-                    value={dayjs(data.date).format("HH:mm")}
-                    cursorColor={colors.primary}
-                  />
-                </TouchableOpacity>
+                <TextInput
+                  readOnly
+                  style={styles.input}
+                  value={dayjs(data.date).format("HH:mm")}
+                  cursorColor={colors.primary}
+                />
               </View>
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Colher(es)</Text>
               <TextInput
+                readOnly
                 keyboardType="numeric"
                 returnKeyType="done"
                 style={styles.input}
                 cursorColor={colors.primary}
                 value={data?.spoons ? String(data.spoons) : undefined}
-                onChangeText={(text) =>
-                  setData(({ ...prev }) => ({
-                    ...prev,
-                    spoons: parseInt(text ?? "0"),
-                  }))
-                }
               />
             </View>
 
@@ -119,15 +81,13 @@ export function AddEditModal(props: Props) {
                   return (
                     <Button
                       key={key}
+                      disabled
                       textStyle={styles.buttonPhText}
                       style={[
                         styles.buttonPh,
                         { backgroundColor: getColorForPH(pH) },
                       ]}
                       text={`${pH.toFixed(1)}`}
-                      onPress={() =>
-                        setData(({ ...prev }) => ({ ...prev, pH }))
-                      }
                     >
                       {selected && (
                         <View
@@ -147,19 +107,6 @@ export function AddEditModal(props: Props) {
                 })}
               </View>
             </View>
-            <Button
-              disabled={saving}
-              style={styles.buttonSave}
-              textStyle={styles.buttonSaveText}
-              text="Guardar"
-              onPress={handleSave}
-            />
-
-            {error && (
-              <Text style={{ color: colors.danger, textAlign: "center" }}>
-                {error}
-              </Text>
-            )}
           </View>
           {isLoading && id && (
             <View
@@ -197,26 +144,6 @@ export function AddEditModal(props: Props) {
           )}
         </View>
       </View>
-      <DatetimePicker
-        open={openDatetimePicker}
-        onChange={(newDate) => {
-          if (newDate) {
-            let oldDate = data.date;
-            if (mode === "date") {
-              oldDate.setDate(newDate.getDate());
-              oldDate.setMonth(newDate.getMonth());
-              oldDate.setFullYear(newDate.getFullYear());
-            }
-            if (mode === "time") {
-              oldDate.setHours(newDate.getHours(), newDate.getMinutes(), 0, 0);
-            }
-            setData(({ ...prev }) => ({ ...prev, date: oldDate }));
-          }
-        }}
-        mode={mode}
-        // value={data.date}
-        onClose={() => setOpenDatetimePicker(false)}
-      />
     </Modal>
   );
 }

@@ -21,10 +21,11 @@ type Props = ListRenderItemInfo<{
 }> & {
   onSwipeableWillOpen?(props: SwipeableWillOpen): void;
   onEdit?(id: string): void;
+  onPress?(): void;
 };
 
 export function renderItem(props: Props) {
-  const { onSwipeableWillOpen, item, onEdit } = props;
+  const { onSwipeableWillOpen, item, onEdit, onPress } = props;
   let currentRef: any = null;
 
   return (
@@ -55,7 +56,7 @@ export function renderItem(props: Props) {
         );
       }}
     >
-      <Card data={item} />
+      <Card data={item} onPress={onPress} />
     </Swipeable>
   );
 }

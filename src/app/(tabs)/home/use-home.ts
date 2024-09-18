@@ -23,6 +23,7 @@ export function useHome() {
   const { selectFolder } = useSelectFolder();
 
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const [dataId, setDataId] = useState<string | null>(null);
   const [refresh, setRefresh] = useState(false);
   const [loadingStart, setLoadingStart] = useState(false);
@@ -164,37 +165,6 @@ export function useHome() {
     }
   };
 
-  const handleResetDatabase = () => {
-    Alert.alert(
-      "Reiniciar a base de dados?",
-      "Todos os dados serão apagados, continuar mesmo assim?",
-      [
-        { text: "Cancelar" },
-        {
-          text: "Ok",
-          onPress: async () => {
-            try {
-              await resetDatabase();
-              await handleLoadingStart();
-            } catch (error) {
-              console.error(error);
-            }
-          },
-        },
-      ],
-      {
-        cancelable: true,
-        userInterfaceStyle: "dark",
-      }
-    );
-  };
-
-  const handleExportData = async () => {
-    await selectFolder();
-  };
-
-  const handleImportData = async () => {};
-
   useEffect(() => {
     handleLoadingStart();
   }, []);
@@ -205,6 +175,7 @@ export function useHome() {
 
   return {
     data,
+    setDataId,
     responseData,
     dataId,
     handleOpenAddModal,
@@ -220,8 +191,7 @@ export function useHome() {
     handleLoadingMore,
     handleNextPage,
     onSwipeableWillOpen,
-    handleResetDatabase,
-    handleExportData,
-    handleImportData,
+    openDetailsModal,
+    setOpenDetailsModal,
   };
 }

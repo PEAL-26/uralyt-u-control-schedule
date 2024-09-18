@@ -19,11 +19,13 @@ import { useHome } from "./use-home";
 import { renderItem } from "./render-item";
 import { resetDatabase } from "@/database/migrate";
 import { exportData, importFromTxt } from "@/database/backup";
+import { DetailsModal } from "@/components/modals/details-modal";
 
-export function Home() {
+export default function Home() {
   const {
     data,
     dataId,
+    setDataId,
     handleCloseAddModal,
     handleOpenAddModal,
     openAddModal,
@@ -37,9 +39,8 @@ export function Home() {
     handleLoadingStart,
     handleLoadingMore,
     onSwipeableWillOpen,
-    handleResetDatabase,
-    handleExportData,
-    handleImportData,
+    openDetailsModal,
+    setOpenDetailsModal,
   } = useHome();
   const window = useWindowDimensions();
   const heightWindow = window.height - 200;
@@ -49,42 +50,6 @@ export function Home() {
       <View style={styles.container}>
         <View style={{ position: "relative" }}>
           <Text style={styles.title}>UUCS</Text>
-          <View
-            style={{
-              position: "absolute",
-              right: 0,
-              top: 40,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <Button
-              onPress={() =>
-                exportData().then(() => alert("Backup feito com sucesso."))
-              }
-            >
-              <MaterialIcons
-                name="vertical-align-top"
-                size={24}
-                color={colors.text}
-              />
-            </Button>
-            <Button
-              onPress={() =>
-                importFromTxt().then(() => alert("Restauro feito com sucesso"))
-              }
-            >
-              <MaterialIcons
-                name="vertical-align-bottom"
-                size={24}
-                color={colors.text}
-              />
-            </Button>
-            <Button onPress={handleResetDatabase}>
-              <MaterialIcons name="restart-alt" size={24} color={colors.text} />
-            </Button>
-          </View>
         </View>
         <FlatList
           data={loadingStart ? [] : data}
@@ -98,6 +63,10 @@ export function Home() {
               ...render,
               onSwipeableWillOpen,
               onEdit: handleEditData,
+              onPress: () => {
+                setOpenDetailsModal(true);
+                setDataId(String(render.item.id));
+              },
             })
           }
           contentContainerStyle={styles.content}
@@ -163,6 +132,14 @@ export function Home() {
         id={dataId}
         open={openAddModal}
         onClose={handleCloseAddModal}
+      />
+      <DetailsModal
+        id={dataId}
+        open={openDetailsModal}
+        onClose={() => {
+          setOpenDetailsModal(false);
+          setDataId(null);
+        }}
       />
     </>
   );

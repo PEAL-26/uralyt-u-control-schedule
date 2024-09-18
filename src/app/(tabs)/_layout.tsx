@@ -1,49 +1,58 @@
-import { colors } from "@/styles/color";
-import { Slot } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router/tabs";
+import { colors } from "@/styles/color";
+import { Text, View } from "react-native";
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
     <Tabs
-      initialRouteName="index"
+      initialRouteName="home/index"
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: colors.primary,
-        // tabBarInactiveTintColor: colors.gray[3],
         tabBarHideOnKeyboard: true,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.text,
+        tabBarBackground: () => (
+          <View style={{ backgroundColor: colors.cardBackground }} />
+        ),
+        tabBarStyle: {
+          backgroundColor: colors.cardBackground,
+          borderTopColor: colors.inputBorder,
+          paddingTop: 8,
+          height: 60,
+        },
+        tabBarLabel: ({ children, color }) => (
+          <Text style={{ color, fontSize: 10, paddingBottom: 8 }}>
+            {children}
+          </Text>
+        ),
       }}
-      // tabBar={({ ...rest }) => (
-      //   <TabBarComponent
-      //     segment="(seller)"
-      //     initialRouteName="index"
-      //     tabs={SELLER_TABS}
-      //     {...rest}
-      //   />
-      // )}
     >
       <Tabs.Screen
-        key="home"
-        name="home"
+        name="home/index"
         options={{
           title: "Home",
-          tabBarHideOnKeyboard: true,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="home" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        key="charts"
-        name="charts"
+        name="charts/index"
         options={{
           title: "Gráficos",
-          tabBarHideOnKeyboard: true,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="bar-chart" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        key="settings"
-        name="settings"
+        name="settings/index"
         options={{
           title: "Configurações",
-          tabBarHideOnKeyboard: true,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="cog" color={color} />
+          ),
         }}
       />
     </Tabs>
