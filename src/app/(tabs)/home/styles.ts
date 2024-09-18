@@ -21,6 +21,7 @@ export const styles = StyleSheet.create({
   content: {
     gap: 16,
     paddingBottom: 90,
+    paddingTop: 16,
   },
   addButton: {
     position: "absolute",

@@ -8,13 +8,10 @@ export default function TabLayout() {
     <Tabs
       initialRouteName="home/index"
       screenOptions={{
-        headerShown: false,
+        // headerShown: false,
         tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.text,
-        tabBarBackground: () => (
-          <View style={{ backgroundColor: colors.cardBackground }} />
-        ),
         tabBarStyle: {
           backgroundColor: colors.cardBackground,
           borderTopColor: colors.inputBorder,
@@ -26,6 +23,12 @@ export default function TabLayout() {
             {children}
           </Text>
         ),
+        headerStyle: {
+          backgroundColor: colors.cardBackground,
+        },
+        headerTitleStyle: {
+          color: colors.text,
+        },
       }}
     >
       <Tabs.Screen

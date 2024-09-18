@@ -5,21 +5,17 @@ import {
   View,
   RefreshControl,
   useWindowDimensions,
-  Alert,
-  AlertButton,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { colors } from "@/styles/color";
 import { Button } from "@/components/button";
+import { DetailsModal } from "@/components/modals/details-modal";
 import { AddEditModal } from "@/components/modals/add-edit-modal";
 
 import { styles } from "./styles";
 import { useHome } from "./use-home";
 import { renderItem } from "./render-item";
-import { resetDatabase } from "@/database/migrate";
-import { exportData, importFromTxt } from "@/database/backup";
-import { DetailsModal } from "@/components/modals/details-modal";
 
 export default function Home() {
   const {
@@ -48,9 +44,9 @@ export default function Home() {
   return (
     <>
       <View style={styles.container}>
-        <View style={{ position: "relative" }}>
+        {/* <View style={{ position: "relative" }}>
           <Text style={styles.title}>UUCS</Text>
-        </View>
+        </View> */}
         <FlatList
           data={loadingStart ? [] : data}
           refreshControl={

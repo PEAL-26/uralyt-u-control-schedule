@@ -97,7 +97,7 @@ export function useHome() {
     }
 
     openSwipeableRef.current = currentRef;
-  };
+  }; 
 
   const handleLoadingStart = async () => {
     if (loadingMore || loadingStart || refresh) return;
@@ -105,7 +105,11 @@ export function useHome() {
     try {
       setData(() => []);
       setLoadingStart(true);
-      const response = await database.list<Data>(page, pageSize, orderByDate);
+      const response = await database.list<Data>({
+        page,
+        pageSize,
+        orderBy: orderByDate,
+      });
       setData(response?.data || []);
       setResponseData(response);
     } catch (error) {
@@ -120,7 +124,11 @@ export function useHome() {
 
     try {
       setLoadingMore(true);
-      const response = await database.list<Data>(page, pageSize, orderByDate);
+      const response = await database.list<Data>({
+        page,
+        pageSize,
+        orderBy: orderByDate,
+      });
       const newData = response.data.filter(
         (item) => !data.find((f) => f.id === item.id)
       );
@@ -148,11 +156,11 @@ export function useHome() {
       let lastResponse: ResponseData | null = null;
 
       for (let index = 1; index <= page; index++) {
-        const response = await database.list<Data>(
-          index,
+        const response = await database.list<Data>({
+          page: index,
           pageSize,
-          orderByDate
-        );
+          orderBy: orderByDate,
+        });
         newData.push(...response.data);
         lastResponse = response;
       }

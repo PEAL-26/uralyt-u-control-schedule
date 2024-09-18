@@ -2,6 +2,14 @@ import { count, eq, SQL } from "drizzle-orm";
 import { db } from "@/database/connection";
 import { SQLiteColumn, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 
+type ListConfigs = {
+  select?: any;
+  page?: number;
+  pageSize?: number;
+  where?: SQL<unknown> | ((aliases: any) => SQL | undefined);
+  orderBy?: any;
+};
+
 export function useDatabase(schema: SQLiteTableWithColumns<any>) {
   const create = async <T extends { [x: string]: any }>(data: T) => {
     const result = await db.insert(schema).values(data);
@@ -12,9 +20,7 @@ export function useDatabase(schema: SQLiteTableWithColumns<any>) {
     id: string,
     data: T
   ) => {
-    console.log(data);
     const result = await db.update(schema).set(data).where(eq(schema.id, id));
-
     return result;
   };
 
@@ -23,17 +29,17 @@ export function useDatabase(schema: SQLiteTableWithColumns<any>) {
     return result;
   };
 
-  const list = async <T>(
-    page = 1,
-    pageSize = 10,
-    ...orderBy: (SQLiteColumn | SQL)[]
-  ) => {
+  const list = async <T>(configs?: ListConfigs) => {
+    const { select, page = 1, pageSize = 10, where, orderBy } = configs || {};
+    const { ...order } = orderBy || [];
+
     const totalItems = await db.select({ count: count() }).from(schema);
     const totalCount = totalItems[0].count;
     const data = await db
-      .select()
+      .select(select)
       .from(schema)
-      .orderBy(...orderBy)
+      .orderBy(orderBy)
+      .where(where)
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
